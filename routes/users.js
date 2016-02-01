@@ -46,4 +46,19 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
   });
 });
 
+// updates user
+// POST
+router.post('/:username', passport.authenticate('jwt', { session: false}), function(req, res) {
+  TokenHelpers.verifyToken(req, res, function(req, res) {
+    Users.updateUser({'username' : req.params.username}, {'website' : req.body.website, 'bio' : req.body.bio, 'email' : req.body.email, 'phone': req.body.phone, 'gender' : req.body.gender}, {new: true}, function(err, user) {
+      if(err) {
+        console.log('Error occured in updating');
+        console.log(err);
+      } else {
+        res.json(user);
+      }
+    });
+  });
+});
+
 module.exports = router;

@@ -21,9 +21,9 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
 });
 
 // Returns single guide according to id
-router.get('/:id', passport.authenticate('jwt', { session: false}), function(req, res) {
+router.get('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.getGuide({ 'id': req.params.id }, function(err, guide) {
+    Guides.getGuide({ '_id': req.params._id }, function(err, guide) {
       if(err) {
         throw err;
       }

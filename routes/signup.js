@@ -12,10 +12,13 @@ router.post('/', function(req, res) {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-      bio: req.body.bio,
-      website: req.body.website,
-      phone: req.body.phone,
-      gender: req.body.gender
+      bio: "",
+      website: "",
+      phone: "",
+      gender: "Not Specified",
+      savedGuides: [],
+      submittedGuides: [],
+      drafts: []
     });
     // Save the user
     newUser.save(function(err) {

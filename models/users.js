@@ -12,7 +12,8 @@ var userSchema = mongoose.Schema({
   email: {
     type: String, 
     unique: true,
-    required: true },
+    required: true 
+  },
   password: {
     type: String,
     required: true
@@ -32,7 +33,34 @@ var userSchema = mongoose.Schema({
   gender: {
     type: String,
     required: false
-  }
+  },
+  savedGuides: [{
+    guideId: {
+      type: String
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  submittedGuides: [{
+    guideId: {
+      type: String
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  drafts: [{
+    guideId: {
+      type: String
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 });
 
 // Apply the uniqueValidator plugin to userSchema.

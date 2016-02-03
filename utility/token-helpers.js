@@ -7,7 +7,9 @@ var verifyToken = function(req, res, callback) {
   if (token) {
     var decoded = jwt.decode(token, config.secret);
     Users.getUser({username: decoded.username}, function(err, user) {
-      if (err) throw err;
+      if (err) {
+        console.log(err);
+      }
       if (!user) {
         return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
       }

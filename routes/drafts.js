@@ -13,7 +13,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Drafts.getDrafts(function(err, drafts) {
       if(err) {
-        throw err;
+        console.log(err);
       }
       res.json(drafts);
     });
@@ -25,7 +25,7 @@ router.get('/:_id', passport.authenticate('jwt', { session: false}), function(re
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Drafts.getDraft({ '_id': req.params._id }, function(err, draft) {
       if(err) {
-        throw err;
+        console.log(err);
       }
       res.json(draft);
     });

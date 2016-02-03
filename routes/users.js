@@ -13,7 +13,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Users.getUsers(function(err, user) {
       if(err) {
-        throw err;
+        console.log(err);
       }
       res.json(user);
     });
@@ -25,7 +25,7 @@ router.get('/:username', passport.authenticate('jwt', { session: false}), functi
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Users.getUser({'username': req.params.username}, function(err, user) {
       if(err) {
-        throw err;
+        console.log(err);
       }
       res.json(user);
     });

@@ -8,7 +8,9 @@ var User = require('../models/users');
 // Route to authenticate a user (POST http://localhost:8080/api/auth)
 router.post('/', function(req, res) {
   User.getUser({username: req.body.username}, function(err, user) {
-    if (err) throw err;
+    if (err) {
+      console.log(err);
+    }
     if (!user) {
       res.send({success: false, msg: 'Authentication failed. User not found.'});
     } else {

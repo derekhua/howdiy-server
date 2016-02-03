@@ -13,7 +13,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Guides.getGuides(function(err, guides) {
       if(err) {
-        throw err;
+        console.log(err);
       }
       res.json(guides);
     });
@@ -25,7 +25,7 @@ router.get('/:_id', passport.authenticate('jwt', { session: false}), function(re
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Guides.getGuide({ '_id': req.params._id }, function(err, guide) {
       if(err) {
-        throw err;
+        console.log(err);
       }
       res.json(guide);
     });

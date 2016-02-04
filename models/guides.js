@@ -2,9 +2,8 @@ var mongoose = require('mongoose');
 
 // Guide Schema
 var guideSchema = mongoose.Schema({
-  id: {
-    type: String,
-    unique: true,
+  draft: {
+    type: Boolean,
     required: true
   },
   title: {
@@ -12,7 +11,12 @@ var guideSchema = mongoose.Schema({
     required: true
   },
   picturePath: {
-    type: String
+    type: String,
+    default: ""
+  },
+  base64Picture: {
+    type: String,
+    default: ""
   },
   author: {
     type: String,
@@ -28,36 +32,37 @@ var guideSchema = mongoose.Schema({
   },
   steps: [{
     picturePath: {
-      type: String
+      type: String,
+      default: ""
+    },
+    base64Picture: {
+      type: String,
+      default: ""
     },
     body: {
       type: String,
       default: ""
-    },
-    comments: [{
-      body: String,
-      date: Date
-    }]
+    }
   }],
   comments: [{
+    username: String,
     body: String,
     date: Date
   }],
   meta: {
-    favs: Number,
+    likes: {
+      type: Number,
+      default: 0
+    },
+    shares: {
+      type: Number,
+      default: 0
+    }
     createDate: {
       type: Date,
       default: Date.now
     }
   },
-  likes: {
-    type: Number,
-    default: 0
-  },
-  shares: {
-    type: Number,
-    default: 0
-  }
 });
 
 var Guides = module.exports = mongoose.model('Guides', guideSchema);

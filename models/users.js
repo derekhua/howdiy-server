@@ -45,7 +45,8 @@ var userSchema = mongoose.Schema({
   }],
   submittedGuides: [{
     guideId: {
-      type: String
+      type: String,
+      required: true
     },
     timestamp: {
       type: Date,
@@ -54,20 +55,19 @@ var userSchema = mongoose.Schema({
   }],
   drafts: [{
     guideId: {
-      type: String
+      type: String,
+      required: true
     },
     timestamp: {
       type: Date,
       default: Date.now
     }
   }],
-  likedGuides: { 
-    type : Object,
-    default : {}
+  likedGuides: {
+    type: Array
   },
-  sharedGuides: { 
-    type : Object,
-    default : {}
+  sharedGuides: {
+    type: Array
   }
 },{minimize: false});
 

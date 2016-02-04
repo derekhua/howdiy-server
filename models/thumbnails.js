@@ -11,8 +11,9 @@ var thumbnailSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  image: {
-    type: String
+  picturePath: {
+    type: String,
+    default: ""
   },
   author: {
     type: String,
@@ -22,6 +23,14 @@ var thumbnailSchema = mongoose.Schema({
     type: String,
     default: ""
   },
+  likes: {
+    type: Number,
+    default: 0
+  },
+  shares: {
+    type: Number,
+    default: 0
+  }
 });
 
 var Thumbnails = module.exports = mongoose.model('Thumbnails', thumbnailSchema);

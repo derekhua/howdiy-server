@@ -49,6 +49,14 @@ var guideSchema = mongoose.Schema({
       type: Date,
       default: Date.now
     }
+  },
+  likes: {
+    type: Number,
+    default: 0
+  },
+  shares: {
+    type: Number,
+    default: 0
   }
 });
 
@@ -65,3 +73,7 @@ module.exports.getGuides = function(params, callback, limit) {
 module.exports.addGuide = function(guide, callback) {
   Guides.create(guide, callback);
 };
+
+module.exports.updateGuide = function(conditions, update, options, callback) {
+  Guides.findOneAndUpdate(conditions, update, options, callback);
+}

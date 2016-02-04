@@ -46,4 +46,19 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
   });
 });
 
+// updates guide
+// POST
+router.post('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
+  TokenHelpers.verifyToken(req, res, function(req, res) {
+    Guides.updateGuide({'_id' : req.params._id}, req.body, {new: true}, function(err, guide) {
+      if(err) {
+        console.log('Error occured in updating');
+        console.log(err);
+      } else {
+        res.json(guide);
+      }
+    });
+  });
+});
+
 module.exports = router;

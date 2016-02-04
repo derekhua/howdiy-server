@@ -60,8 +60,16 @@ var userSchema = mongoose.Schema({
       type: Date,
       default: Date.now
     }
-  }]
-});
+  }],
+  likedGuides: { 
+    type : Object,
+    default : {}
+  },
+  sharedGuides: { 
+    type : Object,
+    default : {}
+  }
+},{minimize: false});
 
 // Apply the uniqueValidator plugin to userSchema.
 userSchema.plugin(uniqueValidator);

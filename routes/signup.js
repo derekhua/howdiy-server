@@ -18,7 +18,9 @@ router.post('/', function(req, res) {
       gender: "Not Specified",
       savedGuides: [],
       submittedGuides: [],
-      drafts: []
+      drafts: [],
+      likedGuides: {},
+      sharedGuides: {}
     });
     // Save the user
     newUser.save(function(err) {

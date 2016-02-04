@@ -15,7 +15,6 @@ var auth      = require('./routes/authenticate');
 var guides    = require('./routes/guides');
 var users     = require('./routes/users');
 var thumbnails= require('./routes/thumbnails');
-var drafts    = require('./routes/drafts');
 var s3Client  = require('./config/s3');
 
 var app = express();
@@ -89,7 +88,6 @@ app.use('/api/signup', signup);
 app.use('/api/auth', auth);
 app.use('/api/g', guides);
 app.use('/api/u', users);
-app.use('/api/d', drafts);
 app.use('/api/t', thumbnails);
 // Access photos dir
 app.use('/photos', express.static(__dirname + '/photos'));

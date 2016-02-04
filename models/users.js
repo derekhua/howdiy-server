@@ -64,10 +64,12 @@ var userSchema = mongoose.Schema({
     }
   }],
   likedGuides: {
-    type: Array
+    type: Object,
+    default: {}
   },
   sharedGuides: {
-    type: Array
+    type: Object,
+    default: {}
   }
 },{minimize: false});
 

@@ -45,9 +45,18 @@ var guideSchema = mongoose.Schema({
     }
   }],
   comments: [{
-    username: String,
-    body: String,
-    date: Date
+    username: {
+      type: String,
+      required: true
+    },
+    body: {
+      type: String,
+      required: true 
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    }
   }],
   meta: {
     likes: {

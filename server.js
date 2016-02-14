@@ -1,10 +1,10 @@
-var bodyParser 	= require('body-parser');
-var express 		= require('express');
-var helmet 			= require('helmet');
+var bodyParser  = require('body-parser');
+var express     = require('express');
+var helmet      = require('helmet');
 var jwt         = require('jwt-simple');
-var mongoose 		= require('mongoose');
-var morgan 			= require('morgan');
-var passport		= require('passport');
+var mongoose    = require('mongoose');
+var morgan      = require('morgan');
+var passport    = require('passport');
 var multipart   = require('connect-multiparty');
 var fs          = require('fs');
 
@@ -20,9 +20,9 @@ var s3Client  = require('./config/s3');
 var app = express();
 
 // Parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 // Parse application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(helmet());
 // HTTP request logger
 app.use(morgan('combined'));

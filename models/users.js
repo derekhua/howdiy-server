@@ -34,6 +34,10 @@ var userSchema = mongoose.Schema({
     type: String,
     required: false
   },
+  profilePicture: {
+    type: String,
+    default: "http://i.imgur.com/dmLa1NC.png"
+  },
   savedGuides: [{
     guideId: {
       type: String

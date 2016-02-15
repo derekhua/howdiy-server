@@ -1,29 +1,16 @@
 var express   = require('express');
 var passport  = require('passport');
 var AWS       = require('aws-sdk'); 
-var fs        = require('fs');
 var router    = express.Router();
 
 var TokenHelpers  = require('../utility/token-helpers');
 var Guides        = require('../models/guides');
 var Users         = require('../models/users');
 var Thumbnails    = require('../models/thumbnails');
+var ImageHelper   = require('../utility/image-helper');
 var bucketLink    = "https://s3.amazonaws.com/howdiy/";
 
 require('../config/passport')(passport);
-
-function decodeBase64Image(dataString) {
-  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
-    response = {};
-
-  if (matches.length !== 3) {
-    return new Error('Invalid input string');
-  }
-  response.type = matches[1];
-  response.data = new Buffer(matches[2], 'base64');
-  
-  return response;
-}
 
 // GET
 // Returns all guides
@@ -63,7 +50,7 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
         var imagesUploaded = 0;
         for(i = 0; i < guide.steps.length; i++) {
           var filename = guide._id + "_" + i + ".jpg";
-          var imageBuffer = decodeBase64Image(guide.steps[i].picturePath);
+          var imageBuffer = ImageHelper.decodeBase64Image(guide.steps[i].picturePath);
           var s3Params = {
             Bucket: "howdiy",
             Key: filename,
@@ -88,7 +75,15 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
                   }
                 });
                 
-                Users.updateUser({'username' : guide.author}, {$push : { submittedGuides : {"guideId" : guide._id} } }, 
+                var addedUserGuide;
+                if (guide.draft) {
+                  addedUserGuide = {$push : { drafts : {"guideId" : guide._id} } }
+                }
+                else {
+                  addedUserGuide = {$push : { submittedGuides : {"guideId" : guide._id} } }
+                }
+                
+                Users.updateUser({'username' : guide.author}, addedUserGuide,
                 {new: true}, function(err, updatedGuide) {
                   if(err) {
                     console.log('Error occured in user update');

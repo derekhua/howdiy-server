@@ -6,6 +6,10 @@ var router    = express.Router();
 
 var TokenHelpers  = require('../utility/token-helpers');
 var Guides        = require('../models/guides');
+var Users         = require('../models/users');
+var Thumbnails    = require('../models/thumbnails');
+var bucketLink    = "https://s3.amazonaws.com/howdiy/";
+
 require('../config/passport')(passport);
 
 function decodeBase64Image(dataString) {
@@ -59,7 +63,7 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
         var imagesUploaded = 0;
         for(i = 0; i < guide.steps.length; i++) {
           var filename = guide._id + "_" + i + ".jpg";
-          var imageBuffer = decodeBase64Image(guide.steps[i].base64Picture);
+          var imageBuffer = decodeBase64Image(guide.steps[i].picturePath);
           var s3Params = {
             Bucket: "howdiy",
             Key: filename,
@@ -71,17 +75,43 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
             }
             else {
               console.log("Successfully uploaded " + guide._id + "_" + imagesUploaded + ".jpg");
-              guide.steps[imagesUploaded].base64Picture = "";
-              guide.steps[imagesUploaded].picturePath = "https://s3.amazonaws.com/howdiy/" + guide._id + "_" + imagesUploaded + ".jpg";
+              guide.steps[imagesUploaded].picturePath = bucketLink + guide._id + "_" + imagesUploaded + ".jpg";
               imagesUploaded++;
               
               if (imagesUploaded === guide.steps.length) {
                 Guides.updateGuide({'_id' : guide._id}, guide, {new: true}, function(err, updatedGuide) {
                   if(err) {
-                    console.log('Error occured in image update');
+                    console.log('Error occured in image URL update');
                     console.log(err);
                   } else {
-                    console.log('mongodb image update success');
+                    console.log('image URL update success');
+                  }
+                });
+                
+                Users.updateUser({'username' : guide.author}, {$push : { submittedGuides : {"guideId" : guide._id} } }, 
+                {new: true}, function(err, updatedGuide) {
+                  if(err) {
+                    console.log('Error occured in user update');
+                    console.log(err);
+                  } else {
+                    console.log('user update success');
+                  }
+                });
+                
+                var guideThumbnail = {
+                  guideId : guide._id,
+                  title : guide.title,
+                  author : guide.author,
+                  image : bucketLink + guide._id + "_0.jpg",
+                  description : guide.description
+                }
+                
+                Thumbnails.addThumbnail(guideThumbnail, function(err, addedThumbnail) {
+                  if(err) {
+                    console.log('Error occured in adding thumbnail');
+                    console.log(err);
+                  } else {
+                    console.log('thumbnail successfully added');
                   }
                 });
               }

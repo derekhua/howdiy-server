@@ -14,10 +14,6 @@ var guideSchema = mongoose.Schema({
     type: String,
     default: ""
   },
-  base64Picture: {
-    type: String,
-    default: ""
-  },
   author: {
     type: String,
     required: true
@@ -32,10 +28,6 @@ var guideSchema = mongoose.Schema({
   },
   steps: [{
     picturePath: {
-      type: String,
-      default: ""
-    },
-    base64Picture: {
       type: String,
       default: ""
     },

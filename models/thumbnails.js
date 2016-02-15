@@ -11,7 +11,7 @@ var thumbnailSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  picturePath: {
+  image: {
     type: String,
     default: ""
   },

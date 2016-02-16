@@ -3,10 +3,10 @@ var Users         = require('../models/users');
 var Thumbnails    = require('../models/thumbnails');
 var AWS           = require('aws-sdk');
 var ImageHelper   = require('../utility/image-helper');
-var bucketLink    = "https://s3.amazonaws.com/howdiy/";
+var bucketURL    = "https://s3.amazonaws.com/howdiy/";
 var S3 = new AWS.S3();
 
-var createNewGuide = function(guide) {
+var processNewGuide = function(guide) {
   var imagesUploaded = 0;
   for(i = 0; i < guide.steps.length; i++) {
     //sets picture to default image if no image is uploaded with a step
@@ -14,8 +14,9 @@ var createNewGuide = function(guide) {
       guide.steps[i].picturePath = ImageHelper.defaultStepImage;
     }
     
-    var filename = guide._id + "_" + i + ".jpg";
+    var filename = guide._id + "_" + guide.steps[i]._id + ".jpg";
     var imageBuffer = ImageHelper.decodeBase64Image(guide.steps[i].picturePath);
+    guide.steps[i].picturePath = bucketURL + filename;
     var s3Params = {
       Bucket: "howdiy",
       Key: filename,
@@ -26,8 +27,7 @@ var createNewGuide = function(guide) {
         console.log(err)   
       }
       else {
-        console.log("Successfully uploaded " + guide._id + "_" + imagesUploaded + ".jpg");
-        guide.steps[imagesUploaded].picturePath = bucketLink + guide._id + "_" + imagesUploaded + ".jpg";
+        console.log("Successfully uploaded " + guide._id + "image #" + imagesUploaded);
         imagesUploaded++;
         
         if (imagesUploaded === guide.steps.length) {
@@ -62,7 +62,7 @@ var createNewGuide = function(guide) {
             guideId : guide._id,
             title : guide.title,
             author : guide.author,
-            image : bucketLink + guide._id + "_0.jpg",
+            image : bucketURL + guide._id + "_" + guide.steps[0]._id + ".jpg",
             description : guide.description
           };
           
@@ -88,9 +88,9 @@ var updateExistingGuide = function(guide) {
     }
     
     if (ImageHelper.isBase64String(guide.steps[i].picturePath)) {
-      var filename = guide._id + "_" + i + ".jpg";
+      var filename = guide._id + "_" + guide.steps[i]._id + ".jpg";
       var imageBuffer = ImageHelper.decodeBase64Image(guide.steps[i].picturePath);
-      guide.steps[i].picturePath = bucketLink + filename;
+      guide.steps[i].picturePath = bucketURL + filename;
       var s3Params = {
         Bucket: "howdiy",
         Key: filename,
@@ -117,13 +117,14 @@ var updateExistingGuide = function(guide) {
           console.log('draft image URL update success');
         }
       });
+      
       var guideThumbnail = {
         guideId : guide._id,
         title : guide.title,
         author : guide.author,
-        image : bucketLink + guide._id + "_0.jpg",
+        image : bucketURL + guide._id + "_" + guide.steps[0]._id + ".jpg",
         description : guide.description
-      }
+      };
       
       Thumbnails.updateThumbnail({'guideId' : guide._id}, guideThumbnail, function(err, addedThumbnail) {
         if (err) {
@@ -138,7 +139,7 @@ var updateExistingGuide = function(guide) {
   }
   
   //removes guide id from user drafts array and adds to user submitted array
-  if (guide.draft === false) {
+  if (!guide.draft) {
     userUpdate = {$pull : { drafts : {"guideId" : guide._id} }, $push : { submittedGuides : {"guideId" : guide._id} } }
     Users.updateUser({'username' : guide.author}, userUpdate,
     {new: true}, function(err, updatedGuide) {
@@ -153,5 +154,5 @@ var updateExistingGuide = function(guide) {
   }
 };
 
-module.exports.createNewGuide = createNewGuide;
+module.exports.processNewGuide = processNewGuide;
 module.exports.updateExistingGuide = updateExistingGuide;

@@ -40,7 +40,7 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
         console.log(err);
       } 
       else {
-        GuideHelpers.createNewGuide(guide);
+        GuideHelpers.processNewGuide(guide);     
         res.json(guide);
       }
     });
@@ -57,7 +57,9 @@ router.post('/:_id', passport.authenticate('jwt', { session: false}), function(r
         console.log(err);
       } 
       else {
-        GuideHelpers.updateExistingGuide(guide);
+        if (req.body.steps !== undefined) {
+          GuideHelpers.updateExistingGuide(guide);
+        }
         res.json(guide);
       }
     });

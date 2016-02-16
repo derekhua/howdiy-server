@@ -46,3 +46,7 @@ module.exports.getThumbnails = function(params, callback, limit) {
 module.exports.addThumbnail = function(thumbnail, callback) {
   Thumbnails.create(thumbnail, callback);
 };
+
+module.exports.updateThumbnail = function(conditions, update, options, callback) {
+  Thumbnails.findOneAndUpdate(conditions, update, options, callback);
+}

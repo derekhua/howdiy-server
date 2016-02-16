@@ -82,4 +82,4 @@ module.exports.addGuide = function(guide, callback) {
 
 module.exports.updateGuide = function(conditions, update, options, callback) {
   Guides.findOneAndUpdate(conditions, update, options, callback);
-}
+};

@@ -9,7 +9,7 @@ var Users         = require('../models/users');
 var Thumbnails    = require('../models/thumbnails');
 var ImageHelper   = require('../utility/image-helper');
 var bucketLink    = "https://s3.amazonaws.com/howdiy/";
-
+var S3 = new AWS.S3();
 require('../config/passport')(passport);
 
 // GET
@@ -29,7 +29,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
 router.get('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Guides.getGuide({ '_id': req.params._id }, function(err, guide) {
-      if(err) {
+      if (err) {
         console.log(err);
       }
       res.json(guide);
@@ -41,12 +41,11 @@ router.get('/:_id', passport.authenticate('jwt', { session: false}), function(re
 router.post('/', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Guides.addGuide(req.body, function(err, guide) {
-      if(err) {
+      if (err) {
         console.log('Error occured in adding');
         console.log(err);
-      } else {
-        res.json(guide);
-        var S3 = new AWS.S3();
+      } 
+      else {
         var imagesUploaded = 0;
         for(i = 0; i < guide.steps.length; i++) {
           var filename = guide._id + "_" + i + ".jpg";
@@ -67,7 +66,7 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
               
               if (imagesUploaded === guide.steps.length) {
                 Guides.updateGuide({'_id' : guide._id}, guide, {new: true}, function(err, updatedGuide) {
-                  if(err) {
+                  if (err) {
                     console.log('Error occured in image URL update');
                     console.log(err);
                   } else {
@@ -75,17 +74,17 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
                   }
                 });
                 
-                var addedUserGuide;
+                var userUpdate;
                 if (guide.draft) {
-                  addedUserGuide = {$push : { drafts : {"guideId" : guide._id} } }
+                  userUpdate = {$push : { drafts : {"guideId" : guide._id} } }
                 }
                 else {
-                  addedUserGuide = {$push : { submittedGuides : {"guideId" : guide._id} } }
+                  userUpdate = {$push : { submittedGuides : {"guideId" : guide._id} } }
                 }
                 
-                Users.updateUser({'username' : guide.author}, addedUserGuide,
+                Users.updateUser({'username' : guide.author}, userUpdate,
                 {new: true}, function(err, updatedGuide) {
-                  if(err) {
+                  if (err) {
                     console.log('Error occured in user update');
                     console.log(err);
                   } else {
@@ -102,7 +101,7 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
                 }
                 
                 Thumbnails.addThumbnail(guideThumbnail, function(err, addedThumbnail) {
-                  if(err) {
+                  if (err) {
                     console.log('Error occured in adding thumbnail');
                     console.log(err);
                   } else {
@@ -113,6 +112,7 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
             }
           });
         }
+        res.json(guide);
       }
     });
   });
@@ -123,10 +123,77 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
 router.post('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
     Guides.updateGuide({'_id' : req.params._id}, req.body, {new: true}, function(err, guide) {
-      if(err) {
+      if (err) {
         console.log('Error occured in updating');
         console.log(err);
-      } else {
+      } 
+      else {
+        for (i = 0; i < guide.steps.length; i++) {
+          if (ImageHelper.isBase64String(guide.steps[i].picturePath)) {
+            var filename = guide._id + "_" + i + ".jpg";
+            var imageBuffer = ImageHelper.decodeBase64Image(guide.steps[i].picturePath);
+            guide.steps[i].picturePath = bucketLink + filename;
+            var s3Params = {
+              Bucket: "howdiy",
+              Key: filename,
+              Body: imageBuffer.data
+            };
+            S3.putObject(s3Params, function(err, data) {
+              if (err) {       
+                console.log(err);
+              }
+              else {
+                console.log(data);
+              }
+            });
+          }
+          
+          //updates guide and thumbnail
+          if (i === guide.steps.length - 1) {
+            Guides.updateGuide({'_id' : guide._id}, guide, {new: true}, function(err, updatedGuide) {
+              if (err) {
+                console.log('Error occured in draft image URL update');
+                console.log(err);
+              } 
+              else {
+                console.log('draft image URL update success');
+              }
+            });
+            var guideThumbnail = {
+              guideId : guide._id,
+              title : guide.title,
+              author : guide.author,
+              image : bucketLink + guide._id + "_0.jpg",
+              description : guide.description
+            }
+            
+            Thumbnails.updateThumbnail({'guideId' : guide._id}, guideThumbnail, function(err, addedThumbnail) {
+              if (err) {
+                console.log('Error occured in updating thumbnail');
+                console.log(err);
+              } 
+              else {
+                console.log('thumbnail successfully updated');
+              }
+            });
+          }
+        }
+        
+        //removes guide id from user drafts array and adds to user submitted array
+        if (guide.draft === false) {
+          userUpdate = {$pull : { drafts : {"guideId" : guide._id} }, $push : { submittedGuides : {"guideId" : guide._id} } }
+          Users.updateUser({'username' : guide.author}, userUpdate,
+          {new: true}, function(err, updatedGuide) {
+            if (err) {
+              console.log('Error occured in user update');
+              console.log(err);
+            } 
+            else {
+              console.log('user update success');
+            }
+          });
+        }
+        
         res.json(guide);
       }
     });

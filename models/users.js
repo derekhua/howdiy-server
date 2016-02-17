@@ -38,35 +38,9 @@ var userSchema = mongoose.Schema({
     type: String,
     default: "https://s3.amazonaws.com/howdiy/default_profilepicture.png"
   },
-  savedGuides: [{
-    guideId: {
-      type: String
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  submittedGuides: [{
-    guideId: {
-      type: String,
-      required: true
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  drafts: [{
-    guideId: {
-      type: String,
-      required: true
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now
-    }
-  }],
+  savedGuides: [],
+  submittedGuides: [],
+  drafts: [],
   likedGuides: {
     type: Object,
     default: {}

@@ -41,10 +41,10 @@ var processNewGuide = function(guide) {
           
           var userUpdate;
           if (guide.draft) {
-            userUpdate = {$push : { drafts : {"guideId" : guide._id} } }
+            userUpdate = {$push : { drafts : guide._id} }
           }
           else {
-            userUpdate = {$push : { submittedGuides : {"guideId" : guide._id} } }
+            userUpdate = {$push : { submittedGuides : guide._id } }
           }
           
           Users.updateUser({'username' : guide.author}, userUpdate,
@@ -91,7 +91,7 @@ var updateExistingGuide = function(guide) {
   
   //removes guide id from user drafts array and adds to user submitted array
   if (!guide.draft) {
-    userUpdate = {$pull : { drafts : {"guideId" : guide._id} }, $push : { submittedGuides : {"guideId" : guide._id} } }
+    userUpdate = {$pull : { drafts : guide._id }, $push : { submittedGuides : guide._id } }
     Users.updateUser({'username' : guide.author}, userUpdate,
     {new: true}, function(err, updatedGuide) {
       if (err) {

@@ -3,8 +3,9 @@ var passport  = require('passport');
 var AWS       = require('aws-sdk'); 
 var router    = express.Router();
 
-var TokenHelpers = require('../utility/token-helpers');
-var Users = require('../models/users');
+var TokenHelpers  = require('../utility/token-helpers');
+var Users         = require('../models/users');
+var Guides        = require('../models/guides');
 var ImageHelper   = require('../utility/image-helper');
 var bucketLink    = "https://s3.amazonaws.com/howdiy/";
 
@@ -30,6 +31,23 @@ router.get('/:username', passport.authenticate('jwt', { session: false}), functi
         console.log(err);
       }
       res.json(user);
+    });
+  });
+});
+
+// Returns the user's guides specified by type
+router.get('/:username/guides', passport.authenticate('jwt', { session: false}), function(req, res) {
+  TokenHelpers.verifyToken(req, res, function(req, res) {
+    Users.getUser({'username': req.params.username}, function(err, user) {
+      if(err) {
+        console.log(err);
+      }
+      Guides.getGuides({'_id': {$in: user[req.query.type]}}, req.query.projection, function(err, guides) {
+        if(err) {
+          console.log(err);
+        }
+        res.json(guides);
+      });
     });
   });
 });

@@ -15,6 +15,7 @@ var auth      = require('./routes/authenticate');
 var guides    = require('./routes/guides');
 var users     = require('./routes/users');
 var thumbnails= require('./routes/thumbnails');
+var search    = require('./routes/search');
 var s3Client  = require('./config/s3');
 
 var app = express();
@@ -44,53 +45,13 @@ app.use(function(req, res, next) {
 });
 
 app.get('/', function(req, res) {res.send('Use /api/');});
-
-// Test route for posting photos
-app.post('/photos', multipart(), function(req, res) {
-  var filepath = req.files.file.path;
-  console.log("Request filepath: " + filepath);
-  fs.readFile(filepath, function (err, data) {
-    var filename = req.files.file.name;
-    if (filename.substr(filename.lastIndexOf('.') + 1) !== 'jpg') {
-      filename += '.jpg';
-    }
-    console.log("File name: " + filename);
-    if (err) {
-      console.log(err);
-    }
-    else {
-      var params = {
-        localFile: filepath,
-        s3Params: {
-          Bucket: "howdiy",
-          Key: filename
-        }
-      };
-      var uploader = s3Client.uploadFile(params);
-      uploader.on('error', function(err) {
-        console.error("unable to upload:", err.stack);
-        res.sendStatus(500);
-      });
-      uploader.on('progress', function() {
-        console.log("progress", uploader.progressMd5Amount,
-        uploader.progressAmount, uploader.progressTotal);
-      });
-      uploader.on('end', function() {
-        console.log("Done uploading");
-        res.sendStatus(200);
-      });
-    };
-  });
-});
-
 app.use('/api/', index);
 app.use('/api/signup', signup);
 app.use('/api/auth', auth);
 app.use('/api/g', guides);
 app.use('/api/u', users);
 app.use('/api/t', thumbnails);
-// Access photos dir
-app.use('/photos', express.static(__dirname + '/photos'));
+app.use('/api/search', search);
 
 app.listen(app.get('port'), function() {
   console.log('Express started! Running on port ' + app.get('port') + '. Press CTRL-C to terminate');

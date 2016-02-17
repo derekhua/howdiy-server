@@ -87,6 +87,19 @@ var updateExistingGuide = function(guide) {
         }
       });
     }
+    
+    //updates guide
+    if (i === guide.steps.length - 1) {
+      Guides.updateGuide({'_id' : guide._id}, guide, {new: true}, function(err, updatedGuide) {
+        if (err) {
+          console.log('Error occured in draft image URL update');
+          console.log(err);
+        } 
+        else {
+          console.log('draft image URL update success');
+        }
+      });
+    }
   }
   
   //removes guide id from user drafts array and adds to user submitted array

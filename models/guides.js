@@ -68,12 +68,12 @@ var guideSchema = mongoose.Schema({
 
 var Guides = module.exports = mongoose.model('Guides', guideSchema);
 
-module.exports.getGuide = function(params, callback, limit) {
-  Guides.findOne(params, callback).limit(limit);
+module.exports.getGuide = function(params, projection, callback, limit) {
+  Guides.findOne(params, projection, callback).limit(limit);
 };
 
-module.exports.getGuides = function(params, callback, limit) {
-  Guides.find(params, callback).limit(limit);
+module.exports.getGuides = function(params, projection, callback, limit) {
+  Guides.find(params, projection, callback).limit(limit);
 };
 
 module.exports.addGuide = function(guide, callback) {

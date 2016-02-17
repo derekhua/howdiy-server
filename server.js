@@ -5,8 +5,6 @@ var jwt         = require('jwt-simple');
 var mongoose    = require('mongoose');
 var morgan      = require('morgan');
 var passport    = require('passport');
-var multipart   = require('connect-multiparty');
-var fs          = require('fs');
 
 var index     = require('./routes/index');
 var config    = require('./config/database');
@@ -14,9 +12,7 @@ var signup    = require('./routes/signup');
 var auth      = require('./routes/authenticate');
 var guides    = require('./routes/guides');
 var users     = require('./routes/users');
-var thumbnails= require('./routes/thumbnails');
 var search    = require('./routes/search');
-var s3Client  = require('./config/s3');
 
 var app = express();
 
@@ -50,7 +46,6 @@ app.use('/api/signup', signup);
 app.use('/api/auth', auth);
 app.use('/api/g', guides);
 app.use('/api/u', users);
-app.use('/api/t', thumbnails);
 app.use('/api/search', search);
 
 app.listen(app.get('port'), function() {

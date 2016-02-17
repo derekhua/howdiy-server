@@ -7,10 +7,9 @@ var Guides        = require('../models/guides');
 require('../config/passport')(passport);
 
 // GET
-// Returns all guides
 router.get('/', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.getGuides({}, function(err, guides) {
+    Guides.getGuides({}, req.query.projection, function(err, guides) {
       if(err) {
         console.log(err);
       }
@@ -22,7 +21,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
 // Returns single guide according to id
 router.get('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.getGuide({'_id': req.params._id}, function(err, guide) {
+    Guides.getGuide({'_id': req.params._id}, req.query.projection, function(err, guide) {
       if (err) {
         console.log(err);
       }

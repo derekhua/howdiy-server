@@ -11,10 +11,9 @@ var bucketLink    = "https://s3.amazonaws.com/howdiy/";
 require('../config/passport')(passport);
 
 // GET
-// Returns all users
 router.get('/', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
-    Users.getUsers(function(err, user) {
+    Users.getUsers({}, req.query.projection, function(err, user) {
       if(err) {
         console.log(err);
       }
@@ -26,7 +25,7 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
 // Returns single user
 router.get('/:username', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
-    Users.getUser({'username': req.params.username}, function(err, user) {
+    Users.getUser({'username': req.params.username}, req.query.projection, function(err, user) {
       if(err) {
         console.log(err);
       }
@@ -56,7 +55,7 @@ router.post('/:username', passport.authenticate('jwt', { session: false}), funct
     if (typeof req.body.profilePicture !== 'undefined') {
       var S3 = new AWS.S3();
       var imageBuffer = ImageHelper.decodeBase64Image(req.body.profilePicture);
-      var filename = "Profilepicture_" + req.params.username + ".jpg";
+      var filename = "profilepicture_" + req.params.username + ".jpg";
       var s3Params = {
         Bucket: "howdiy",
         Key: filename,

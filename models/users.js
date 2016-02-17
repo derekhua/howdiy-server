@@ -36,7 +36,7 @@ var userSchema = mongoose.Schema({
   },
   profilePicture: {
     type: String,
-    default: "http://i.imgur.com/dmLa1NC.png"
+    default: "https://s3.amazonaws.com/howdiy/default_profilepicture.png"
   },
   savedGuides: [{
     guideId: {
@@ -112,12 +112,12 @@ userSchema.methods.comparePassword = function (passw, cb) {
 
 var Users = module.exports = mongoose.model('Users', userSchema);
 
-module.exports.getUser = function(params, callback, limit) {
-  Users.findOne(params, callback).limit(limit);
+module.exports.getUser = function(params, projection, callback, limit) {
+  Users.findOne(params, projection, callback).limit(limit);
 };
 
-module.exports.getUsers = function(params, callback, limit) {
-  Users.find(params, callback).limit(limit);
+module.exports.getUsers = function(params, projection, callback, limit) {
+  Users.find(params, projection, callback).limit(limit);
 };
 
 module.exports.addUser = function(user, callback) {

@@ -1,10 +1,9 @@
 var Guides        = require('../models/guides');
 var Users         = require('../models/users');
-var Thumbnails    = require('../models/thumbnails');
 var AWS           = require('aws-sdk');
 var ImageHelper   = require('../utility/image-helper');
-var bucketURL    = "https://s3.amazonaws.com/howdiy/";
-var S3 = new AWS.S3();
+var bucketURL     = "https://s3.amazonaws.com/howdiy/";
+var S3            = new AWS.S3();
 
 var processNewGuide = function(guide) {
   var imagesUploaded = 0;
@@ -57,23 +56,6 @@ var processNewGuide = function(guide) {
               console.log('user update success');
             }
           });
-          
-          var guideThumbnail = {
-            guideId : guide._id,
-            title : guide.title,
-            author : guide.author,
-            image : bucketURL + guide._id + "_" + guide.steps[0]._id + ".jpg",
-            description : guide.description
-          };
-          
-          Thumbnails.addThumbnail(guideThumbnail, function(err, addedThumbnail) {
-            if (err) {
-              console.log('Error occured in adding thumbnail');
-              console.log(err);
-            } else {
-              console.log('thumbnail successfully added');
-            }
-          });
         }
       }
     });
@@ -102,37 +84,6 @@ var updateExistingGuide = function(guide) {
         }
         else {
           console.log(data);
-        }
-      });
-    }
-    
-    //updates guide and thumbnail
-    if (i === guide.steps.length - 1) {
-      Guides.updateGuide({'_id' : guide._id}, guide, {new: true}, function(err, updatedGuide) {
-        if (err) {
-          console.log('Error occured in draft image URL update');
-          console.log(err);
-        } 
-        else {
-          console.log('draft image URL update success');
-        }
-      });
-      
-      var guideThumbnail = {
-        guideId : guide._id,
-        title : guide.title,
-        author : guide.author,
-        image : bucketURL + guide._id + "_" + guide.steps[0]._id + ".jpg",
-        description : guide.description
-      };
-      
-      Thumbnails.updateThumbnail({'guideId' : guide._id}, guideThumbnail, function(err, addedThumbnail) {
-        if (err) {
-          console.log('Error occured in updating thumbnail');
-          console.log(err);
-        } 
-        else {
-          console.log('thumbnail successfully updated');
         }
       });
     }

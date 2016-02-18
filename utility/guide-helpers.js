@@ -38,28 +38,28 @@ var processNewGuide = function(guide) {
               console.log('image URL update success');
             }
           });
-          
-          var userUpdate;
-          if (guide.draft) {
-            userUpdate = {$push : { drafts : guide._id} }
-          }
-          else {
-            userUpdate = {$push : { submittedGuides : guide._id } }
-          }
-          
-          Users.updateUser({'username' : guide.author}, userUpdate,
-          {new: true}, function(err, updatedGuide) {
-            if (err) {
-              console.log('Error occured in user update');
-              console.log(err);
-            } else {
-              console.log('user update success');
-            }
-          });
         }
       }
     });
   }
+  
+  var userUpdate;
+  if (guide.draft) {
+    userUpdate = {$push : { drafts : guide._id} }
+  }
+  else {
+    userUpdate = {$push : { submittedGuides : guide._id } }
+  }
+          
+  Users.updateUser({'username' : guide.author}, userUpdate,
+  {new: true}, function(err, updatedGuide) {
+    if (err) {
+      console.log('Error occured in user update');
+      console.log(err);
+    } else {
+      console.log('user update success');
+    }
+  });
 };
 
 var updateExistingGuide = function(guide) {

@@ -56,7 +56,7 @@ router.post('/:_id', passport.authenticate('jwt', { session: false}), function(r
         console.log(err);
       } 
       else {
-        if (req.body.steps !== undefined) {
+        if (req.body.steps !== undefined && req.body.draft !== undefined) {
           GuideHelpers.updateExistingGuide(guide);
         }
         res.json(guide);

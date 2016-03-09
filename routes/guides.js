@@ -82,7 +82,7 @@ router.post('/:_id/delete', passport.authenticate('jwt', { session: false}), fun
     
     var update;
     if (req.body.guideType === 'draft') {
-      update = {$pull : {draft : req.params._id}};
+      update = {$pull : {drafts : req.params._id}};
     }
     else {
       update = {$pull : {submittedGuides : req.params._id}}

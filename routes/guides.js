@@ -4,6 +4,7 @@ var router    = express.Router();
 var GuideHelpers = require('../utility/guide-helpers');
 var TokenHelpers  = require('../utility/token-helpers');
 var Guides        = require('../models/guides');
+var Users     = require('../models/users');
 require('../config/passport')(passport);
 
 // GET
@@ -60,6 +61,39 @@ router.post('/:_id', passport.authenticate('jwt', { session: false}), function(r
           GuideHelpers.updateExistingGuide(guide);
         }
         res.json(guide);
+      }
+    });
+  });
+});
+
+// deletes guide
+// POST
+router.post('/:_id/delete', passport.authenticate('jwt', { session: false}), function(req, res) {
+  TokenHelpers.verifyToken(req, res, function(req, res) {
+    Guides.deleteGuide({'_id' : req.params._id}, function(err) {
+      if (err) {
+        console.log('Error occured in deleting');
+        console.log(err);
+      } 
+      else {
+        res.json({response : req.params._id + " guide deleted"});
+      }
+    });
+    
+    var update;
+    if (req.body.guideType === 'draft') {
+      update = {$pull : {draft : req.params._id}};
+    }
+    else {
+      update = {$pull : {submittedGuides : req.params._id}}
+    }
+    Users.updateUser({'username' : req.body.username}, update, {new: true}, function(err, updatedUser) {
+      if (err) {
+        console.log('Error occured in user update');
+        console.log(err);
+      } 
+      else {
+        console.log('user update for guide deletion success');
       }
     });
   });

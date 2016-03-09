@@ -7,6 +7,7 @@ var S3            = new AWS.S3();
 
 var processNewGuide = function(guide) {
   var imagesUploaded = 0;
+  
   for(i = 0; i < guide.steps.length; i++) {
     //sets picture to default image if no image is uploaded with a step
     if (guide.steps[i].picturePath.length === 0) {
@@ -33,7 +34,7 @@ var processNewGuide = function(guide) {
           Guides.updateGuide({'_id' : guide._id}, guide, {new: true}, function(err, updatedGuide) {
             if (err) {
               console.log('Error occured in image URL update');
-              console.log(err);y
+              console.log(err);
             } else {
               console.log('image URL update success');
             }
@@ -45,10 +46,10 @@ var processNewGuide = function(guide) {
   
   var userUpdate;
   if (guide.draft) {
-    userUpdate = {$push : { drafts : guide._id} }
+    userUpdate = {$push : { drafts : guide._id.toString()} }
   }
   else {
-    userUpdate = {$push : { submittedGuides : guide._id } }
+    userUpdate = {$push : { submittedGuides : guide._id.toString() } }
   }
           
   Users.updateUser({'username' : guide.author}, userUpdate,
@@ -104,7 +105,7 @@ var updateExistingGuide = function(guide) {
   
   //removes guide id from user drafts array and adds to user submitted array
   if (!guide.draft) {
-    userUpdate = {$pull : { drafts : guide._id }, $push : { submittedGuides : guide._id } }
+    userUpdate = {$pull : { drafts : guide._id.toString() }, $push : { submittedGuides : guide._id.toString() } }
     Users.updateUser({'username' : guide.author}, userUpdate,
     {new: true}, function(err, updatedGuide) {
       if (err) {

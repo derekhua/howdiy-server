@@ -70,32 +70,7 @@ router.post('/:_id', passport.authenticate('jwt', { session: false}), function(r
 // POST
 router.post('/:_id/delete', passport.authenticate('jwt', { session: false}), function(req, res) {
   TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.deleteGuide({'_id' : req.params._id}, function(err) {
-      if (err) {
-        console.log('Error occured in deleting');
-        console.log(err);
-      } 
-      else {
-        res.json({response : req.params._id + " guide deleted"});
-      }
-    });
-    
-    var update;
-    if (req.body.guideType === 'draft') {
-      update = {$pull : {drafts : req.params._id}};
-    }
-    else {
-      update = {$pull : {submittedGuides : req.params._id}}
-    }
-    Users.updateUser({'username' : req.body.username}, update, {new: true}, function(err, updatedUser) {
-      if (err) {
-        console.log('Error occured in user update');
-        console.log(err);
-      } 
-      else {
-        console.log('user update for guide deletion success');
-      }
-    });
+    GuideHelpers.deleteGuide(req, res);
   });
 });
 

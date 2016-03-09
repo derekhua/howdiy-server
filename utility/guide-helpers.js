@@ -119,5 +119,67 @@ var updateExistingGuide = function(guide) {
   }
 };
 
+var deleteGuide = function(req, res) {
+  
+  Guides.getGuide({'_id': req.params._id}, function(err, guide) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      var keys = [];
+      for (i = 0; i < guide.steps.length; i++) {
+        keys.push({'Key' : req.params._id + "_" + guide.steps[i]._id + ".jpg"});
+      }
+      s3Delete(keys);
+      Guides.deleteGuide({'_id' : req.params._id}, function(err) {
+        if (err) {
+          console.log('Error occured in deleting');
+          console.log(err);
+        } 
+        else {
+          res.json({response : req.params._id + " guide deleted"});
+        }
+      });
+    }
+  });
+  
+  var update;
+  if (req.body.guideType === 'draft') {
+    update = {$pull : {drafts : req.params._id}};
+  }
+  else {
+    update = {$pull : {submittedGuides : req.params._id}}
+  }
+  Users.updateUser({'username' : req.body.username}, update, {new: true}, function(err, updatedUser) {
+    if (err) {
+      console.log('Error occured in user update');
+      console.log(err);
+    } 
+    else {
+      console.log('user update for guide deletion success');
+    }
+  });
+}
+
+var s3Delete = function(keys) {
+  var params = {
+    Bucket: 'howdiy', 
+    Delete: {
+      Objects: keys
+    },
+  };
+
+  S3.deleteObjects(params, function(err, data) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log(data);
+    }
+  });
+};
+
 module.exports.processNewGuide = processNewGuide;
 module.exports.updateExistingGuide = updateExistingGuide;
+module.exports.deleteGuide = deleteGuide;
+module.exports.s3Delete = s3Delete;

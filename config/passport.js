@@ -1,15 +1,16 @@
-var JwtStrategy = require('passport-jwt').Strategy;
+"use-strict";
+const JwtStrategy = require('passport-jwt').Strategy;
 
 // Load up the user model
-var User = require('../models/users');
+const User = require('../models/users');
 // Get db config file
-var config = require('./database');
+const config = require('./database');
 
-module.exports = function(passport) {
+module.exports = passport => {
   var opts = {};
   opts.secretOrKey = config.secret;
-  passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    User.findOne({id: jwt_payload.id}, function(err, user) {
+  passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
+    User.findOne({id: jwt_payload.id}, (err, user) => {
       if (err) {
           return done(err, false);
       }

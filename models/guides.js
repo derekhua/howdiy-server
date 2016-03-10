@@ -1,7 +1,8 @@
-var mongoose = require('mongoose');
+"use-strict";
+const mongoose = require('mongoose');
 
 // Guide Schema
-var guideSchema = mongoose.Schema({
+const guideSchema = mongoose.Schema({
   draft: {
     type: Boolean,
     required: true
@@ -66,24 +67,24 @@ var guideSchema = mongoose.Schema({
   },
 });
 
-var Guides = module.exports = mongoose.model('Guides', guideSchema);
+const Guides = module.exports = mongoose.model('Guides', guideSchema);
 
-module.exports.getGuide = function(params, projection, callback, limit) {
+module.exports.getGuide = (params, projection, callback, limit) => {
   Guides.findOne(params, projection, callback).limit(limit);
 };
 
-module.exports.getGuides = function(params, projection, callback, limit) {
+module.exports.getGuides = (params, projection, callback, limit) => {
   Guides.find(params, projection, callback).limit(limit);
 };
 
-module.exports.addGuide = function(guide, callback) {
+module.exports.addGuide = (guide, callback) => {
   Guides.create(guide, callback);
 };
 
-module.exports.updateGuide = function(conditions, update, options, callback) {
+module.exports.updateGuide = (conditions, update, options, callback) => {
   Guides.findOneAndUpdate(conditions, update, options, callback);
 };
 
-module.exports.deleteGuide = function(conditions, callback) {
+module.exports.deleteGuide = (conditions, callback) => {
   Guides.remove(conditions, callback);
 };

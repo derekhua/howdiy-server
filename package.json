@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "author": "Derek Hua, Xin He, Jesse Chau",
   "description": "howdiy server",
-  "license": "The make a lot of money license",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": ""
   },
   "dependencies": {
+    "aws-sdk": "^2.2.42",
     "bcrypt": "^0.8.5",
     "body-parser": "^1.14.2",
     "compression": "^1.6.0",
@@ -51,5 +52,9 @@
     "karma-phantomjs-launcher": "^0.2.3",
     "phantomjs": "^1.9.19",
     "shelljs": "^0.5.3"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "main": "server.js"
 }

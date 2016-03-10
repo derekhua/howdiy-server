@@ -1,12 +1,13 @@
-var config  = require('../config/database');
-var jwt     = require('jwt-simple');
-var Users   = require('../models/users');
+"use strict";
+const config  = require('../config/database');
+const jwt     = require('jwt-simple');
+const Users   = require('../models/users');
 
-var verifyToken = function(req, res, callback) {
-  var token = getToken(req.headers);
+const verifyToken = (req, res, callback) => {
+  let token = getToken(req.headers);
   if (token) {
-    var decoded = jwt.decode(token, config.secret);
-    Users.getUser({username: decoded.username}, function(err, user) {
+    let decoded = jwt.decode(token, config.secret);
+    Users.getUser({username: decoded.username}, (err, user) => {
       if (err) {
         console.log(err);
       }
@@ -20,9 +21,9 @@ var verifyToken = function(req, res, callback) {
   }
 };
 
-var getToken = function (headers) {
+const getToken = headers => {
   if (headers && headers.authorization) {
-    var parted = headers.authorization.split(' ');
+    let parted = headers.authorization.split(' ');
     if (parted.length === 2) {
       return parted[1];
     } else {

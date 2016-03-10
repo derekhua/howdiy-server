@@ -1,15 +1,16 @@
-var express   = require('express');
-var passport  = require('passport'); 
-var router    = express.Router();
-var TokenHelpers  = require('../utility/token-helpers');
-var Guides        = require('../models/guides');
-var Users         = require('../models/users');
+"use strict";
+const express   = require('express');
+const passport  = require('passport'); 
+const router    = express.Router();
+const TokenHelpers  = require('../utility/token-helpers');
+const Guides        = require('../models/guides');
+const Users         = require('../models/users');
 require('../config/passport')(passport);
 
 // GET
-router.get('/', passport.authenticate('jwt', { session: false}), function(req, res) {
-  TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.getGuides({"title": {$regex: req.query.q}}, function(err, guides) {
+router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
+  TokenHelpers.verifyToken(req, res, (req, res) => {
+    Guides.getGuides({"title": {$regex: req.query.q}}, (err, guides) => {
       if(err) {
         console.log(err);
       }

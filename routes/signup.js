@@ -1,14 +1,14 @@
-var express = require('express');
-var router  = express.Router();
-
-var User = require('../models/users');
+"use strict";
+const express = require('express');
+const router  = express.Router();
+const User    = require('../models/users');
 
 // Create a new user account (POST http://localhost:8080/api/signup)
-router.post('/', function(req, res) {
+router.post('/', (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.json({success: false, msg: 'Please pass username and password.'});
   } else {
-    var newUser = new User({
+    let newUser = new User({
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
@@ -23,7 +23,7 @@ router.post('/', function(req, res) {
       sharedGuides: {}
     });
     // Save the user
-    newUser.save(function(err) {
+    newUser.save(err => {
       if (err) {
         return res.json({success: false, msg: 'Username already exists.'});
       }

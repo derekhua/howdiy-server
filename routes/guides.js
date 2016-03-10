@@ -1,16 +1,17 @@
-var express   = require('express');
-var passport  = require('passport'); 
-var router    = express.Router();
-var GuideHelpers = require('../utility/guide-helpers');
-var TokenHelpers  = require('../utility/token-helpers');
-var Guides        = require('../models/guides');
-var Users     = require('../models/users');
+"use strict";
+const express       = require('express');
+const passport      = require('passport'); 
+const router        = express.Router();
+const GuideHelpers  = require('../utility/guide-helpers');
+const TokenHelpers  = require('../utility/token-helpers');
+const Guides        = require('../models/guides');
+const Users         = require('../models/users');
 require('../config/passport')(passport);
 
 // GET
-router.get('/', passport.authenticate('jwt', { session: false}), function(req, res) {
-  TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.getGuides({}, req.query.projection, function(err, guides) {
+router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
+  TokenHelpers.verifyToken(req, res, (req, res) => {
+    Guides.getGuides({}, req.query.projection, (err, guides) => {
       if(err) {
         console.log(err);
       }
@@ -20,9 +21,9 @@ router.get('/', passport.authenticate('jwt', { session: false}), function(req, r
 });
 
 // Returns single guide according to id
-router.get('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
-  TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.getGuide({'_id': req.params._id}, req.query.projection, function(err, guide) {
+router.get('/:_id', passport.authenticate('jwt', { session: false}), (req, res) => {
+  TokenHelpers.verifyToken(req, res, (req, res) => {
+    Guides.getGuide({'_id': req.params._id}, req.query.projection, (err, guide) => {
       if (err) {
         console.log(err);
       }
@@ -32,9 +33,9 @@ router.get('/:_id', passport.authenticate('jwt', { session: false}), function(re
 });
 
 // POST
-router.post('/', passport.authenticate('jwt', { session: false}), function(req, res) {
-  TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.addGuide(req.body, function(err, guide) {
+router.post('/', passport.authenticate('jwt', { session: false}), (req, res) => {
+  TokenHelpers.verifyToken(req, res, (req, res) => {
+    Guides.addGuide(req.body, (err, guide) => {
       if (err) {
         console.log('Error occured in adding');
         console.log(err);
@@ -49,9 +50,9 @@ router.post('/', passport.authenticate('jwt', { session: false}), function(req, 
 
 // updates guide
 // POST
-router.post('/:_id', passport.authenticate('jwt', { session: false}), function(req, res) {
-  TokenHelpers.verifyToken(req, res, function(req, res) {
-    Guides.updateGuide({'_id' : req.params._id}, req.body, {new: true}, function(err, guide) {
+router.post('/:_id', passport.authenticate('jwt', { session: false}), (req, res) => {
+  TokenHelpers.verifyToken(req, res, (req, res) => {
+    Guides.updateGuide({'_id' : req.params._id}, req.body, {new: true}, (err, guide) => {
       if (err) {
         console.log('Error occured in updating');
         console.log(err);
@@ -68,10 +69,12 @@ router.post('/:_id', passport.authenticate('jwt', { session: false}), function(r
 
 // deletes guide
 // POST
-router.post('/:_id/delete', passport.authenticate('jwt', { session: false}), function(req, res) {
-  TokenHelpers.verifyToken(req, res, function(req, res) {
-    GuideHelpers.deleteGuide(req, res);
-  });
-});
+router.post('/:_id/delete', 
+  passport.authenticate('jwt', { session: false}), (req, res) => {
+    TokenHelpers.verifyToken(req, res, (req, res) => {
+      GuideHelpers.deleteGuide(req, res);
+    });
+  }
+);
 
 module.exports = router;

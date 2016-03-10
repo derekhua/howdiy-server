@@ -9,7 +9,7 @@ const S3            = new AWS.S3();
 const processNewGuide = guide => {
   let imagesUploaded = 0;
   
-  for(i = 0; i < guide.steps.length; i++) {
+  for(let i = 0; i < guide.steps.length; i++) {
     //sets picture to default image if no image is uploaded with a step
     if (guide.steps[i].picturePath.length === 0) {
       guide.steps[i].picturePath = ImageHelper.defaultStepImage;
@@ -69,7 +69,7 @@ const processNewGuide = guide => {
 };
 
 const updateExistingGuide = guide => {
-  for (i = 0; i < guide.steps.length; i++) {
+  for (let i = 0; i < guide.steps.length; i++) {
     //sets picture to default image if no image is uploaded with a step
     if (guide.steps[i].picturePath.length === 0) {
       guide.steps[i].picturePath = ImageHelper.defaultStepImage;
@@ -136,7 +136,7 @@ const deleteGuide = (req, res) => {
     }
     else {
       let keys = [];
-      for (i = 0; i < guide.steps.length; i++) {
+      for (let i = 0; i < guide.steps.length; i++) {
         keys.push({'Key' : `${req.params._id}_${guide.steps[i]._id}.jpg`});
       }
       s3Delete(keys);

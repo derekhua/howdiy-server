@@ -9,7 +9,7 @@ const Users         = require('../models/users');
 const Guides        = require('../models/guides');
 const ImageHelper   = require('../utility/image-helper');
 const UserHelpers   = require('../utility/user-helpers');
-const bucketLink    = "https://s3.amazonaws.com/howdiy/";
+const bucketURL    = "https://s3.amazonaws.com/howdiy/";
 
 require('../config/passport')(passport);
 

@@ -36,8 +36,7 @@ const userSchema = mongoose.Schema({
     required: false
   },
   profilePicture: {
-    type: String,
-    default: "https://s3.amazonaws.com/howdiy/default_profilepicture.png"
+    type: String
   },
   savedGuides: [],
   submittedGuides: [],
@@ -64,7 +63,6 @@ userSchema.pre('save', function(next) {
           return next(err);
         }
         user.password = hash;
-        console.log('here');
         next();
       });
     });

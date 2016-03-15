@@ -8,7 +8,7 @@ const TokenHelpers  = require('../utility/token-helpers');
 const Users         = require('../models/users');
 const Guides        = require('../models/guides');
 const ImageHelper   = require('../utility/image-helper');
-const bucketLink    = "https://s3.amazonaws.com/howdiy/";
+const bucketURL    = "https://s3.amazonaws.com/howdiy/";
 const S3            = new AWS.S3();
 
 const updateProfilePicture = (req,res) => {
@@ -25,7 +25,7 @@ const updateProfilePicture = (req,res) => {
       console.log(err)   
     }
     else {
-      req.body.profilePicture = bucketLink + filename;
+      req.body.profilePicture = bucketURL + filename;
       Users.updateUser(
         {'username' : req.params.username},
         req.body,
@@ -51,7 +51,13 @@ const guideLikeActivityFeedUpdate = (likingUser, guideId) => {
     }
     else {
       let activityInfo = likingUser.username + ' liked your guide "' + guide.title + '"';
-      let activityFeedUpdate = {'userId' : guide.author, 'guideId' : guide._id.toString(), 'activityInfo' : activityInfo, 'timestamp' : Date.now()}
+      let activityFeedUpdate = {
+        'userId' : guide.author, 
+        'guideId' : guide._id.toString(), 
+        'activityInfo' : activityInfo, 
+        'timestamp' : Date.now(), 
+        'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
+      }
       Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
         if (err) {
           console.log(err);

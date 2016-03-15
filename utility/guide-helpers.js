@@ -198,7 +198,13 @@ const s3Delete = keys => {
 const guideSubmissionActivityFeedUpdate = (submitterUser, guide) => {
   for (let i = 0; i < submitterUser.followers.length; i++) {
     let activityInfo = guide.author + ' posted a new guide "' + guide.title + '"';
-    let activityFeedUpdate = {'userId' : guide.author, 'guideId' : guide._id.toString(), 'activityInfo' : activityInfo, 'timestamp' : Date.now()}
+    let activityFeedUpdate = {
+      'userId' : guide.author, 
+      'guideId' : guide._id.toString(), 
+      'activityInfo' : activityInfo, 
+      'timestamp' : Date.now(),
+      'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
+    }
     Users.updateUser({'username' : submitterUser.followers[i]}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
       if (err) {
         console.log(err);
@@ -214,7 +220,13 @@ const guideCommentActivityFeedUpdate = (req) => {
     }
     else {
       let activityInfo = req.body.$push.comments.username + ' commented on your guide "' + guide.title + '"';
-      let activityFeedUpdate = {'userId' : guide.author, 'guideId' : guide._id.toString(), 'activityInfo' : activityInfo, 'timestamp' : Date.now()}
+      let activityFeedUpdate = {
+        'userId' : guide.author, 
+        'guideId' : guide._id.toString(), 
+        'activityInfo' : activityInfo, 
+        'timestamp' : Date.now(),
+        'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
+      }
       Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
         if (err) {
           console.log(err);

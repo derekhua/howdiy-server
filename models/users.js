@@ -46,6 +46,7 @@ const userSchema = mongoose.Schema({
   sharedGuides: [],
   followers: [],
   followings: [],
+  activityFeed: []
 },{minimize: false});
 
 // Apply the uniqueValidator plugin to userSchema.

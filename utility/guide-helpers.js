@@ -53,19 +53,21 @@ const processNewGuide = guide => {
     userUpdate = {$push : { submittedGuides : guide._id.toString() } }
   }
           
-  Users.updateUser(
-    {'username' : guide.author},
-    userUpdate,
-    {new: true},
-    (err, updatedGuide) => {
+  Users.updateUser({'username' : guide.author}, userUpdate, {new: true},
+    (err, updatedUser) => {
       if (err) {
         console.log('Error occured in user update');
         console.log(err);
       } else {
         console.log('user update success');
+        if (!guide.draft) {
+          guideSubmissionActivityFeedUpdate(updatedUser, guide);
+        }
       }
     }
   );
+  
+  
 };
 
 const updateExistingGuide = guide => {
@@ -110,18 +112,19 @@ const updateExistingGuide = guide => {
   
   //removes guide id from user drafts array and adds to user submitted array
   if (!guide.draft) {
-    userUpdate = {$pull : { drafts : guide._id.toString() }, $push : { submittedGuides : guide._id.toString() } }
+    let userUpdate = {$pull : { drafts : guide._id.toString() }, $push : { submittedGuides : guide._id.toString() } }
     Users.updateUser(
       {'username' : guide.author},
       userUpdate,
       {new: true},
-      (err, updatedGuide) => {
+      (err, updatedUser) => {
         if (err) {
           console.log('Error occured in user update');
           console.log(err);
         } 
         else {
           console.log('user update success');
+          guideSubmissionActivityFeedUpdate(updatedUser, guide);
         }
       }
     );
@@ -129,7 +132,6 @@ const updateExistingGuide = guide => {
 };
 
 const deleteGuide = (req, res) => {
-  
   Guides.getGuide({'_id': req.params._id}, (err, guide) => {
     if (err) {
       console.log(err);
@@ -175,7 +177,7 @@ const deleteGuide = (req, res) => {
   );
 };
 
-var s3Delete = keys => {
+const s3Delete = keys => {
   let params = {
     Bucket: 'howdiy', 
     Delete: {
@@ -193,7 +195,38 @@ var s3Delete = keys => {
   });
 };
 
+const guideSubmissionActivityFeedUpdate = (submitterUser, guide) => {
+  for (let i = 0; i < submitterUser.followers.length; i++) {
+    let activityInfo = guide.author + ' posted a new guide "' + guide.title + '"';
+    let activityFeedUpdate = {'userId' : guide.author, 'guideId' : guide._id.toString(), 'activityInfo' : activityInfo, 'timestamp' : Date.now()}
+    Users.updateUser({'username' : submitterUser.followers[i]}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
+};
+
+const guideCommentActivityFeedUpdate = (req) => {
+  Guides.getGuide({'_id': req.params._id}, (err, guide) => {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      let activityInfo = req.body.$push.comments.username + ' commented on your guide "' + guide.title + '"';
+      let activityFeedUpdate = {'userId' : guide.author, 'guideId' : guide._id.toString(), 'activityInfo' : activityInfo, 'timestamp' : Date.now()}
+      Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+  });
+};
+
 module.exports.processNewGuide = processNewGuide;
 module.exports.updateExistingGuide = updateExistingGuide;
 module.exports.deleteGuide = deleteGuide;
 module.exports.s3Delete = s3Delete;
+module.exports.guideSubmissionActivityFeedUpdate = guideSubmissionActivityFeedUpdate;
+module.exports.guideCommentActivityFeedUpdate = guideCommentActivityFeedUpdate;

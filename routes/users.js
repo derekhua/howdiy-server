@@ -8,6 +8,7 @@ const TokenHelpers  = require('../utility/token-helpers');
 const Users         = require('../models/users');
 const Guides        = require('../models/guides');
 const ImageHelper   = require('../utility/image-helper');
+const UserHelpers   = require('../utility/user-helpers');
 const bucketLink    = "https://s3.amazonaws.com/howdiy/";
 
 require('../config/passport')(passport);
@@ -81,37 +82,7 @@ router.post('/:username',
   passport.authenticate('jwt', { session: false}), (req, res) => {
     TokenHelpers.verifyToken(req, res, (req, res) => {
       if (typeof req.body.profilePicture !== 'undefined') {
-        let S3 = new AWS.S3();
-        let imageBuffer = ImageHelper.decodeBase64Image(req.body.profilePicture);
-        let filename = `profilepicture_${req.params.username}.jpg`;
-        let s3Params = {
-          Bucket: "howdiy",
-          Key: filename,
-          Body: imageBuffer.data
-        };
-        
-        S3.putObject(s3Params, (err, data) => {
-          if (err) {       
-            console.log(err)   
-          }
-          else {
-            req.body.profilePicture = bucketLink + filename;
-            Users.updateUser(
-              {'username' : req.params.username},
-              req.body,
-              {new: true},
-              (err, user) => {
-                if(err) {
-                  console.log('Error occured in updating');
-                  console.log(err);
-                } else {
-                  console.log("profile picture update success");
-                  res.json(user);
-                }
-              }
-            );
-          }
-        });
+        UserHelpers.updateProfilePicture(req,res);
       }
       else {
         Users.updateUser(
@@ -122,8 +93,12 @@ router.post('/:username',
             if(err) {
               console.log('Error occured in updating');
               console.log(err);
-            } else {
+            } 
+            else {
               res.json(user);
+              if (req.body.$push !== undefined && req.body.$push.likedGuides !== undefined) {
+                UserHelpers.guideLikeActivityFeedUpdate(user, req.body.$push.likedGuides);
+              }
             }
           }
         );

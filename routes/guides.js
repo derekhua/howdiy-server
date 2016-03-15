@@ -61,6 +61,9 @@ router.post('/:_id', passport.authenticate('jwt', { session: false}), (req, res)
         if (req.body.steps !== undefined && req.body.draft !== undefined) {
           GuideHelpers.updateExistingGuide(guide);
         }
+        if (req.body.$push !== undefined && req.body.$push.comments !== undefined) {
+          GuideHelpers.guideCommentActivityFeedUpdate(req);
+        }
         res.json(guide);
       }
     });

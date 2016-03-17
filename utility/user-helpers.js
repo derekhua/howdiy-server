@@ -8,7 +8,7 @@ const TokenHelpers  = require('../utility/token-helpers');
 const Users         = require('../models/users');
 const Guides        = require('../models/guides');
 const ImageHelper   = require('../utility/image-helper');
-const bucketURL    = "https://s3.amazonaws.com/howdiy/";
+const bucketURL     = "https://s3.amazonaws.com/howdiy/";
 const S3            = new AWS.S3();
 
 const updateProfilePicture = (req,res) => {

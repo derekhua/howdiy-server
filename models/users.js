@@ -45,7 +45,14 @@ const userSchema = mongoose.Schema({
   sharedGuides: [],
   followers: [],
   followings: [],
-  activityFeed: []
+  activityFeed: [],
+  newsFeed: {
+    lastUpdated: {
+      type: Number,
+      default: Date.now()
+    },
+    feed: []
+  }
 },{minimize: false});
 
 // Apply the uniqueValidator plugin to userSchema.

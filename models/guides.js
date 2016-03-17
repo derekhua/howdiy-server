@@ -61,8 +61,8 @@ const guideSchema = mongoose.Schema({
       default: 0
     },
     createDate: {
-      type: Date,
-      default: Date.now
+      type: Number,
+      default: Date.now()
     }
   },
 });

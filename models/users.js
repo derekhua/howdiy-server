@@ -103,4 +103,4 @@ module.exports.addUser = (user, callback) => {
 
 module.exports.updateUser = (conditions, update, options, callback) => {
   Users.findOneAndUpdate(conditions, update, options, callback);
-}
+};

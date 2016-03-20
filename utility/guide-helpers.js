@@ -205,7 +205,7 @@ const guideSubmissionActivityFeedUpdate = (submitterUser, guide) => {
       'timestamp' : Date.now(),
       'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
     }
-    Users.updateUser({'username' : submitterUser.followers[i]}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
+    Users.updateUser({'username' : submitterUser.followers[i]}, {$push : {'activityFeed' : {$position: 0, $each: [activityFeedUpdate]}}}, {new : true}, (err, updatedActivityUser) => {
       if (err) {
         console.log(err);
       }
@@ -227,7 +227,7 @@ const guideCommentActivityFeedUpdate = (req) => {
         'timestamp' : Date.now(),
         'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
       }
-      Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : activityFeedUpdate}}, {new : true}, (err, updatedActivityUser) => {
+      Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : {$position: 0, $each: [activityFeedUpdate]}}}, {new : true}, (err, updatedActivityUser) => {
         if (err) {
           console.log(err);
         }

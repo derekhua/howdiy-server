@@ -7,15 +7,34 @@ const bucketURL     = "https://s3.amazonaws.com/howdiy/";
 const S3            = new AWS.S3();
 
 const processNewGuide = guide => {
-  let imagesUploaded = 0;
+  if (guide.picturePath.length === 0) {
+    guide.picturePath = ImageHelper.defaultStepImage;
+  }
+  let guideImageBuffer = ImageHelper.decodeBase64Image(guide.picturePath);
+  let guideImageFilename = `${guide._id}/GuideImage.jpg`;
+  guide.picturePath = bucketURL + guideImageFilename;
+  var guidePathParams = {
+    Bucket: "howdiy",
+    Key: guideImageFilename,
+    Body: guideImageBuffer.data
+  };
+  S3.putObject(guidePathParams, (err, data) => {
+    if (err) {       
+      console.log(err)   
+    }
+    else {
+      console.log(`Successfully uploaded ${guide._id} guide image`);
+    }
+  });
   
+  let imagesUploaded = 0;
   for(let i = 0; i < guide.steps.length; i++) {
     //sets picture to default image if no image is uploaded with a step
     if (guide.steps[i].picturePath.length === 0) {
       guide.steps[i].picturePath = ImageHelper.defaultStepImage;
     }
     
-    let filename = `${guide._id}_${guide.steps[i]._id}.jpg`;
+    let filename = `${guide._id}/${guide.steps[i]._id}.jpg`;
     let imageBuffer = ImageHelper.decodeBase64Image(guide.steps[i].picturePath);
     guide.steps[i].picturePath = bucketURL + filename;
     let s3Params = {
@@ -36,7 +55,8 @@ const processNewGuide = guide => {
             if (err) {
               console.log('Error occured in image URL update');
               console.log(err);
-            } else {
+            } 
+            else {
               console.log('image URL update success');
             }
           });
@@ -67,7 +87,6 @@ const processNewGuide = guide => {
     }
   );
   
-  
 };
 
 const updateExistingGuide = guide => {
@@ -78,7 +97,7 @@ const updateExistingGuide = guide => {
     }
     
     if (ImageHelper.isBase64String(guide.steps[i].picturePath)) {
-      let filename = `${guide._id}_${guide.steps[i]._id}.jpg`;
+      let filename = `${guide._id}/${guide.steps[i]._id}.jpg`;
       let imageBuffer = ImageHelper.decodeBase64Image(guide.steps[i].picturePath);
       guide.steps[i].picturePath = bucketURL + filename;
       let s3Params = {
@@ -138,10 +157,23 @@ const deleteGuide = (req, res) => {
     }
     else {
       let keys = [];
-      for (let i = 0; i < guide.steps.length; i++) {
-        keys.push({'Key' : `${req.params._id}_${guide.steps[i]._id}.jpg`});
+      let params = {
+        Bucket: 'howdiy',
+        Prefix: req.params._id
       }
-      s3Delete(keys);
+      S3.listObjects(params, function(err, data) {
+        if (err) {
+          console.log(err);
+        }
+        else {
+          keys.push({'Key': `${req.params._id}/GuideImage.jpg`});
+          for (let i = 0; i < data.Contents.length; i++) {
+            keys.push({'Key': data.Contents[i].Key});
+          }
+          s3Delete(keys);
+        }
+      });
+
       Guides.deleteGuide({'_id' : req.params._id}, err => {
         if (err) {
           console.log('Error occured in deleting');

@@ -52,6 +52,11 @@ router.post('/', passport.authenticate('jwt', { session: false}), (req, res) => 
 // POST
 router.post('/:_id', passport.authenticate('jwt', { session: false}), (req, res) => {
   TokenHelpers.verifyToken(req, res, (req, res) => {
+    //adds server timestamp onto comments
+    if (req.body.$push !== undefined && req.body.$push.comments !== undefined) {
+      req.body.$push.comments.date = Date.now();
+    }
+    
     Guides.updateGuide({'_id' : req.params._id}, req.body, {new: true}, (err, guide) => {
       if (err) {
         console.log('Error occured in updating');

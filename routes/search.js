@@ -10,11 +10,13 @@ require('../config/passport')(passport);
 // GET
 router.get('/', passport.authenticate('jwt', { session: false}), (req, res) => {
   TokenHelpers.verifyToken(req, res, (req, res) => {
-    Guides.getGuides({"title": {$regex: req.query.q}}, (err, guides) => {
+    Guides.getGuides({"title": {$regex: req.query.q, $options: 'i'}, "draft": false}, req.query.projection, (err, guides) => {
       if(err) {
         console.log(err);
       }
-      res.json(guides);
+      Users.getUsers({"username": {$regex: req.query.q, $options: 'i'}}, req.query.projection, (err, users) => {
+        res.json(users.concat(guides))
+      });
     });
   });
 });

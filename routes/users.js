@@ -122,6 +122,9 @@ router.post('/:username',
               if (req.body.$push !== undefined && req.body.$push.likedGuides !== undefined) {
                 UserHelpers.guideLikeActivityFeedUpdate(user, req.body.$push.likedGuides);
               }
+              else if (req.body.$push !== undefined && req.body.$push.followings !== undefined) {
+                UserHelpers.userFollowActivityFeedUpdate(user, req.body.$push.followings);
+              }
             }
           }
         );

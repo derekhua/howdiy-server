@@ -52,11 +52,11 @@ const guideLikeActivityFeedUpdate = (likingUser, guideId) => {
     else {
       let activityInfo = likingUser.username + ' liked your guide "' + guide.title + '"';
       let activityFeedUpdate = {
-        'userId' : guide.author, 
+        'userId' : likingUser.username, 
         'guideId' : guide._id.toString(), 
         'activityInfo' : activityInfo, 
         'timestamp' : Date.now(), 
-        'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
+        'image' : ImageHelper.bucketURL + "profilepicture_" + likingUser.username + ".jpg"
       }
       Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : {$position: 0, $each: [activityFeedUpdate]}}}, {new : true}, (err, updatedActivityUser) => {
         if (err) {
@@ -67,5 +67,21 @@ const guideLikeActivityFeedUpdate = (likingUser, guideId) => {
   });
 };
 
+const userFollowActivityFeedUpdate = (follower, followee) => {
+  let activityInfo = follower.username + ' is following you';
+  let activityFeedUpdate = {
+    'userId' : follower.username, 
+    'activityInfo' : activityInfo, 
+    'timestamp' : Date.now(), 
+    'image' : ImageHelper.bucketURL + "profilepicture_" + follower.username + ".jpg"
+  };
+  Users.updateUser({'username' : followee}, {$push : {'activityFeed' : {$position: 0, $each: [activityFeedUpdate]}}}, {new : true}, (err, updatedActivityUser) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+};
+
 module.exports.updateProfilePicture = updateProfilePicture;
 module.exports.guideLikeActivityFeedUpdate = guideLikeActivityFeedUpdate;
+module.exports.userFollowActivityFeedUpdate = userFollowActivityFeedUpdate;

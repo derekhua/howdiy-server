@@ -7,6 +7,8 @@ const bucketURL     = "https://s3.amazonaws.com/howdiy/";
 const S3            = new AWS.S3();
 
 const processNewGuide = guide => {
+  guide.meta.createDate = Date.now();
+  
   if (guide.picturePath.length === 0) {
     guide.picturePath = ImageHelper.defaultStepImage;
   }
@@ -90,6 +92,10 @@ const processNewGuide = guide => {
 };
 
 const updateExistingGuide = guide => {
+  if (!guide.draft) {
+    guide.meta.createDate = Date.now();
+  }
+  
   for (let i = 0; i < guide.steps.length; i++) {
     //sets picture to default image if no image is uploaded with a step
     if (guide.steps[i].picturePath.length === 0) {

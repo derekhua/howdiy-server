@@ -259,11 +259,11 @@ const guideCommentActivityFeedUpdate = (req) => {
     else {
       let activityInfo = req.body.$push.comments.username + ' commented on your guide "' + guide.title + '"';
       let activityFeedUpdate = {
-        'userId' : guide.author, 
+        'userId' : req.body.$push.comments.username, 
         'guideId' : guide._id.toString(), 
         'activityInfo' : activityInfo, 
         'timestamp' : Date.now(),
-        'image' : ImageHelper.bucketURL + "profilepicture_" + guide.author + ".jpg"
+        'image' : ImageHelper.bucketURL + "profilepicture_" + req.body.$push.comments.username + ".jpg"
       }
       Users.updateUser({'username' : guide.author}, {$push : {'activityFeed' : {$position: 0, $each: [activityFeedUpdate]}}}, {new : true}, (err, updatedActivityUser) => {
         if (err) {

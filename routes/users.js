@@ -145,7 +145,7 @@ router.post('/:username/updateNewsFeed',
         // Get all followings guides
         Guides.getGuides(
           {'author': {$in: user['followings']}, 'draft': false},
-          'title picturePath author description category meta',
+          'title picturePath author description category meta comments',
           (err, guides) => {
             if(err) {
               console.log('get guides error')
